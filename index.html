@@ -37,9 +37,24 @@
           <span class="control-rail-label">Human control</span>
           <strong id="controlHint">Hold to stop play</strong>
         </div>
-        <button class="hold-button" id="stopButton" type="button" aria-label="Hold to stop play">
-          <span>Hold to Stop</span>
-        </button>
+        <div class="control-rail-actions">
+          <button
+            class="utility-button"
+            id="fullscreenButton"
+            type="button"
+            aria-label="Toggle fullscreen"
+          >
+            Enter Fullscreen
+          </button>
+          <button
+            class="hold-button"
+            id="stopButton"
+            type="button"
+            aria-label="Hold to stop play"
+          >
+            <span>Hold to Stop</span>
+          </button>
+        </div>
       </section>
 
       <section class="overlay is-visible" id="startOverlay" aria-live="polite">

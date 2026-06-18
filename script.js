@@ -55,6 +55,8 @@ const GAME_CONFIG = Object.freeze({
 
   // Audio stays optional so muted browsers or unsupported devices still play normally.
   soundEnabled: true,
+  // Short haptic pulse sequence reinforces a catch when the browser/device supports vibration.
+  catchVibrationPattern: [18, 24, 32],
   musicStepSec: 0.34,
   musicLookAheadSec: 0.28,
 
@@ -77,6 +79,7 @@ const resultOverlay = document.getElementById("resultOverlay");
 const startButton = document.getElementById("startButton");
 const restartButton = document.getElementById("restartButton");
 const stopButton = document.getElementById("stopButton");
+const fullscreenButton = document.getElementById("fullscreenButton");
 const controlHint = document.getElementById("controlHint");
 
 const CRITTER_TYPES = [
@@ -113,8 +116,8 @@ const CRITTER_VARIANTS = [
   {
     name: "bumper",
     weight: 0.44,
-    sizeMultiplier: 1.28,
-    speedMultiplier: 0.84,
+    sizeMultiplier: 1.52,
+    speedMultiplier: 0.62,
     points: 1,
     scoreColor: "#fff4c7",
     rippleColor: "rgba(255, 223, 136, 0.78)",
@@ -122,8 +125,8 @@ const CRITTER_VARIANTS = [
   {
     name: "zipper",
     weight: 0.56,
-    sizeMultiplier: 1.04,
-    speedMultiplier: 1.24,
+    sizeMultiplier: 0.82,
+    speedMultiplier: 1.74,
     points: 3,
     scoreColor: "#ddfff4",
     rippleColor: "rgba(148, 255, 220, 0.78)",
@@ -161,6 +164,7 @@ const state = {
     startedAt: 0,
     rafId: 0,
   },
+  fullscreenSupported: false,
   audio: {
     context: null,
     masterGain: null,
@@ -429,6 +433,23 @@ function clearTimers() {
   }
 }
 
+function isFullscreenActive() {
+  return Boolean(document.fullscreenElement);
+}
+
+function updateFullscreenButton() {
+  state.fullscreenSupported = Boolean(document.documentElement.requestFullscreen);
+
+  if (!state.fullscreenSupported) {
+    fullscreenButton.textContent = "Fullscreen Unavailable";
+    fullscreenButton.disabled = true;
+    return;
+  }
+
+  fullscreenButton.disabled = false;
+  fullscreenButton.textContent = isFullscreenActive() ? "Exit Fullscreen" : "Enter Fullscreen";
+}
+
 function startSession() {
   const now = performance.now();
 
@@ -459,6 +480,7 @@ function startSession() {
   startAmbientBed();
   playStartCue();
   controlHint.textContent = "Hold to stop play";
+  updateFullscreenButton();
 }
 
 function stopSession() {
@@ -473,6 +495,7 @@ function stopSession() {
   resultSummary.textContent = `Session length: ${formatDuration(
     state.elapsedMs,
   )}. Start a new supervised run whenever the cat is ready.`;
+  updateFullscreenButton();
 }
 
 function scheduleAutoRestart() {
@@ -925,7 +948,7 @@ function playRoundEndCue() {
 
 function triggerSuccessHaptics() {
   if (typeof navigator.vibrate === "function") {
-    navigator.vibrate(12);
+    navigator.vibrate(GAME_CONFIG.catchVibrationPattern);
   }
 }
 
@@ -1360,13 +1383,28 @@ function drawIdleAssistHalo(critter, now, size) {
   ctx.restore();
 }
 
+function drawVariantAura(critter, size) {
+  ctx.save();
+  ctx.translate(critter.x, critter.y);
+  ctx.rotate(critter.angle);
+  ctx.globalAlpha = critter.variant.name === "bumper" ? 0.18 : 0.24;
+  ctx.fillStyle = critter.variant.name === "bumper" ? "#ffe9a8" : "#c5fff0";
+  ctx.beginPath();
+  ctx.ellipse(0, 0, size * 0.7, size * 0.5, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+}
+
 function drawCritters(now) {
   for (const critter of state.critters) {
     if (critter.state !== "alive") {
       continue;
     }
 
-    drawIdleAssistHalo(critter, now, getDisplaySize(critter, now));
+    const displaySize = getDisplaySize(critter, now);
+
+    drawVariantAura(critter, displaySize);
+    drawIdleAssistHalo(critter, now, displaySize);
     critter.type.draw(critter, now);
   }
 }
@@ -1588,10 +1626,30 @@ function preventPlayInterruptions(event) {
   }
 }
 
+async function toggleFullscreen() {
+  if (!state.fullscreenSupported) {
+    updateFullscreenButton();
+    return;
+  }
+
+  try {
+    if (isFullscreenActive()) {
+      await document.exitFullscreen();
+    } else {
+      await document.documentElement.requestFullscreen({ navigationUI: "hide" });
+    }
+  } catch (_error) {
+    // Keep the game usable if the browser rejects fullscreen.
+  } finally {
+    updateFullscreenButton();
+  }
+}
+
 function boot() {
   resizeCanvas();
   syncHud();
   setPhase("idle");
+  updateFullscreenButton();
   state.lastFrameAt = performance.now();
   state.animationFrame = window.requestAnimationFrame(gameLoop);
 }
@@ -1622,6 +1680,7 @@ canvas.addEventListener("contextmenu", (event) => event.preventDefault());
 
 window.addEventListener("resize", resizeCanvas);
 window.addEventListener("orientationchange", () => window.setTimeout(resizeCanvas, 120));
+document.addEventListener("fullscreenchange", updateFullscreenButton);
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) {
     stopAmbientBed();
@@ -1661,5 +1720,9 @@ stopButton.addEventListener("pointerup", cancelHoldStop);
 stopButton.addEventListener("pointercancel", cancelHoldStop);
 stopButton.addEventListener("pointerleave", cancelHoldStop);
 stopButton.addEventListener("lostpointercapture", cancelHoldStop);
+fullscreenButton.addEventListener("click", () => {
+  fullscreenButton.blur();
+  toggleFullscreen();
+});
 
 boot();

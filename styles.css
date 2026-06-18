@@ -184,6 +184,13 @@ body[data-phase="playing"] .control-rail {
   font-size: clamp(0.95rem, 2vw, 1.08rem);
 }
 
+.control-rail-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.utility-button,
 .hold-button {
   --hold-progress: 0%;
   position: relative;
@@ -199,6 +206,15 @@ body[data-phase="playing"] .control-rail {
   color: #fffaf4;
   background: rgba(22, 50, 44, 0.84);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+
+.utility-button {
+  min-width: 188px;
+  background: rgba(79, 144, 112, 0.92);
+}
+
+.utility-button[disabled] {
+  opacity: 0.55;
 }
 
 .hold-button::before {
@@ -319,6 +335,12 @@ body[data-phase="playing"] .overlay {
     gap: 12px;
   }
 
+  .control-rail-actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .utility-button,
   .hold-button {
     width: 100%;
   }
