@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no"
+    />
+    <meta name="theme-color" content="#8fc8ad" />
+    <title>Swipey Critters</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body data-phase="idle">
+    <main class="app-shell">
+      <canvas id="gameCanvas" aria-label="Cat critter game"></canvas>
+
+      <section class="hud" aria-label="Round status">
+        <div class="hud-chip">
+          <span class="hud-label">Score</span>
+          <strong class="hud-value" id="scoreValue">0</strong>
+        </div>
+        <div class="hud-chip">
+          <span class="hud-label">Time</span>
+          <strong class="hud-value" id="timeValue">45</strong>
+        </div>
+      </section>
+
+      <section class="overlay is-visible" id="startOverlay" aria-live="polite">
+        <div class="overlay-card">
+          <p class="eyebrow">Tablet Cat Critter Game</p>
+          <h1>Swipey Critters</h1>
+          <p class="overlay-copy">
+            Big wiggly critters, soft colors, and a quick 45 second round that is easy for paws to
+            chase.
+          </p>
+          <p class="overlay-copy">
+            Big critters are worth 1 point. Tiny zippy critters are worth 3.
+          </p>
+          <button class="play-button" id="startButton" type="button">Play Round</button>
+        </div>
+      </section>
+
+      <section class="overlay" id="resultOverlay" aria-live="polite" aria-hidden="true">
+        <div class="overlay-card">
+          <p class="eyebrow">Round Complete</p>
+          <h2>Final Score: <span id="finalScore">0</span></h2>
+          <p class="overlay-copy">The critters are lined up and ready for another chase.</p>
+          <button class="play-button" id="restartButton" type="button">Play Again</button>
+        </div>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>

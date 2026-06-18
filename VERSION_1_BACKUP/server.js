@@ -4,8 +4,8 @@ const http = require("node:http");
 const fs = require("node:fs");
 const path = require("node:path");
 
-const PORT = Number.parseInt(process.env.PORT || "4173", 10);
-const HOST = process.env.HOST || "127.0.0.1";
+const PORT = 4173;
+const HOST = "127.0.0.1";
 const ROOT = __dirname;
 
 const MIME_TYPES = {

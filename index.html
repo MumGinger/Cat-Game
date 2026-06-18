@@ -6,6 +6,9 @@
       name="viewport"
       content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no"
     />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="theme-color" content="#8fc8ad" />
     <title>Swipey Critters</title>
     <link rel="stylesheet" href="styles.css" />
@@ -14,38 +17,55 @@
     <main class="app-shell">
       <canvas id="gameCanvas" aria-label="Cat critter game"></canvas>
 
-      <section class="hud" aria-label="Round status">
-        <div class="hud-chip">
+      <section class="hud" aria-label="Session status">
+        <div class="hud-chip" id="scoreChip">
           <span class="hud-label">Score</span>
           <strong class="hud-value" id="scoreValue">0</strong>
         </div>
         <div class="hud-chip">
-          <span class="hud-label">Time</span>
-          <strong class="hud-value" id="timeValue">45</strong>
+          <span class="hud-label">Session</span>
+          <strong class="hud-value" id="sessionValue">0:00</strong>
         </div>
+        <div class="hud-chip hud-chip--status">
+          <span class="hud-label">Mode</span>
+          <strong class="hud-value hud-value--status" id="statusValue">Ready</strong>
+        </div>
+      </section>
+
+      <section class="control-rail" aria-label="Human controls">
+        <div class="control-rail-copy">
+          <span class="control-rail-label">Human control</span>
+          <strong id="controlHint">Hold to stop play</strong>
+        </div>
+        <button class="hold-button" id="stopButton" type="button" aria-label="Hold to stop play">
+          <span>Hold to Stop</span>
+        </button>
       </section>
 
       <section class="overlay is-visible" id="startOverlay" aria-live="polite">
         <div class="overlay-card">
-          <p class="eyebrow">Tablet Cat Critter Game</p>
+          <p class="eyebrow">Cat Touch Game / Swipey Critters</p>
           <h1>Swipey Critters</h1>
           <p class="overlay-copy">
-            Big wiggly critters, soft colors, and a quick 45 second round that is easy for paws to
-            chase.
+            Bigger critters, faster chase paths, forgiving paw-or-nose contact, and continuous
+            free play for supervised cat sessions.
           </p>
           <p class="overlay-copy">
-            Big critters are worth 1 point. Tiny zippy critters are worth 3.
+            Press start once, then let the critters keep moving until a human holds the stop
+            control.
           </p>
-          <button class="play-button" id="startButton" type="button">Play Round</button>
+          <button class="play-button" id="startButton" type="button">Start Free Play</button>
         </div>
       </section>
 
       <section class="overlay" id="resultOverlay" aria-live="polite" aria-hidden="true">
         <div class="overlay-card">
-          <p class="eyebrow">Round Complete</p>
-          <h2>Final Score: <span id="finalScore">0</span></h2>
-          <p class="overlay-copy">The critters are lined up and ready for another chase.</p>
-          <button class="play-button" id="restartButton" type="button">Play Again</button>
+          <p class="eyebrow">Session Stopped</p>
+          <h2>Score: <span id="finalScore">0</span></h2>
+          <p class="overlay-copy" id="resultSummary">
+            The critters are ready to resume whenever the next supervised session begins.
+          </p>
+          <button class="play-button" id="restartButton" type="button">Start New Session</button>
         </div>
       </section>
     </main>
